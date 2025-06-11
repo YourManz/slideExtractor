@@ -11,5 +11,5 @@ pip install -r requirements.txt
 Then build the executable:
 
 ```bash
-pyinstaller slide_extractor.spec
+python -m PyInstaller --onefile --noconsole --add-binary "ffmpeg.exe;." slide_extractor.py
 ```
