@@ -11,6 +11,8 @@ export them to PDF or PowerPoint.
 - Thumbnail preview of the first slide.
 - Progress bar while extraction runs.
 - Export to **PPTX** or **PDF** with an option to remove the intermediate JPGs.
+- Cross-platform file opening.
+- Settings menu to configure ffmpeg path and options.
 
 ## Usage
 
@@ -25,6 +27,9 @@ Run the script directly with Python:
 ```bash
 python slide_extractor.py
 ```
+
+After launching, use the **Settings** menu to adjust the ffmpeg path, toggle
+automatic file opening, or enable JPEG cleanup when exporting.
 
 To package a standalone executable with PyInstaller:
 

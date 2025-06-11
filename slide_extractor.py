@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import tkinter as tk
 from tkinter import filedialog, ttk
 import subprocess
@@ -68,7 +69,12 @@ def extract_slides():
     os.makedirs(directory, exist_ok=True)
     out_dir_var.set(directory)
 
-    ffmpeg_path = resource_path("ffmpeg.exe")
+    ffmpeg_path = ffmpeg_path_var.get()
+    if not os.path.isfile(ffmpeg_path):
+        ffmpeg_path = shutil.which("ffmpeg")
+        if not ffmpeg_path:
+            status.set("ffmpeg not found. Set path in Settings.")
+            return
     timestamps = [t.strip() for t in timestamps_var.get().split(',') if t.strip()]
     output_pattern = os.path.join(directory, "%04d.jpg")
     cmds = []
@@ -99,7 +105,8 @@ def extract_slides():
                 root.update_idletasks()
         progress.stop()
         status.set(f"Done! Saved to: {directory}")
-        open_path(directory)
+        if open_after_var.get():
+            open_path(directory)
         show_preview(directory)
     except Exception as e:
         progress.stop()
@@ -130,7 +137,8 @@ def export_to_pptx(directory):
     try:
         prs.save(pptx_path)
         status.set(f"Exported to {pptx_path}")
-        open_path(pptx_path)
+        if open_after_var.get():
+            open_path(pptx_path)
         if delete_var.get():
             for img in images:
                 os.remove(img)
@@ -153,7 +161,8 @@ def export_to_pdf(directory):
     try:
         img_objs[0].save(pdf_path, save_all=True, append_images=img_objs[1:])
         status.set(f"Exported to {pdf_path}")
-        open_path(pdf_path)
+        if open_after_var.get():
+            open_path(pdf_path)
         if delete_var.get():
             for img_path in images:
                 os.remove(img_path)
@@ -174,6 +183,8 @@ out_dir_var = tk.StringVar()
 timestamps_var = tk.StringVar()
 status = tk.StringVar(value="Select a video.")
 delete_var = tk.BooleanVar()
+open_after_var = tk.BooleanVar(value=True)
+ffmpeg_path_var = tk.StringVar(value=resource_path("ffmpeg.exe"))
 
 frm = ttk.Frame(root, padding=10)
 frm.pack(fill=tk.BOTH, expand=True)
@@ -202,10 +213,20 @@ ttk.Button(frm, text="Extract Slides", command=extract_slides).grid(row=6, colum
 ttk.Button(frm, text="Export to PPTX", command=lambda: export_to_pptx(out_dir_var.get())).grid(row=6, column=1)
 ttk.Button(frm, text="Export to PDF", command=lambda: export_to_pdf(out_dir_var.get())).grid(row=6, column=2)
 
-ttk.Checkbutton(frm, text="Delete JPGs after export", variable=delete_var).grid(row=7, column=0, columnspan=3)
-
-ttk.Label(frm, textvariable=status, foreground="blue").grid(row=8, column=0, columnspan=3, pady=5)
+ttk.Label(frm, textvariable=status, foreground="blue").grid(row=7, column=0, columnspan=3, pady=5)
 
 frm.columnconfigure(1, weight=1)
+
+menubar = tk.Menu(root)
+settings_menu = tk.Menu(menubar, tearoff=0)
+settings_menu.add_checkbutton(label="Open files when done", variable=open_after_var)
+settings_menu.add_checkbutton(label="Delete JPGs after export", variable=delete_var)
+def set_ffmpeg_path():
+    path = filedialog.askopenfilename(title="Select ffmpeg", filetypes=[("ffmpeg", "ffmpeg*"), ("All files", "*")])
+    if path:
+        ffmpeg_path_var.set(path)
+settings_menu.add_command(label="Set ffmpeg path", command=set_ffmpeg_path)
+menubar.add_cascade(label="Settings", menu=settings_menu)
+root.config(menu=menubar)
 
 root.mainloop()
