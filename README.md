@@ -11,10 +11,12 @@ export them to PDF or PowerPoint.
 - Thumbnail preview of the first slide.
 - Progress bar while extraction runs.
 - Export to **PPTX** or **PDF** with an option to remove the intermediate JPGs.
+
 - Cross-platform file opening.
 - Settings menu to configure ffmpeg path and options.
 - Optional dark mode theme.
 - Usage menu with quick help.
+
 
 ## Usage
 
@@ -30,11 +32,11 @@ Run the script directly with Python:
 python slide_extractor.py
 ```
 
+
 After launching, open **Settings** to adjust the ffmpeg path, toggle automatic
 file opening, enable JPEG cleanup, or switch to dark mode. The **Usage** menu
 contains a short guide if you need help.
 
-To package a standalone executable with PyInstaller:
 
 ```bash
 python -m PyInstaller --onefile --noconsole --add-binary "ffmpeg.exe;." slide_extractor.py

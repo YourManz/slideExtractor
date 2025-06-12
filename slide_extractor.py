@@ -75,6 +75,7 @@ def extract_slides():
         if not ffmpeg_path:
             status.set("ffmpeg not found. Set path in Settings.")
             return
+
     timestamps = [t.strip() for t in timestamps_var.get().split(',') if t.strip()]
     output_pattern = os.path.join(directory, "%04d.jpg")
     cmds = []
@@ -107,6 +108,7 @@ def extract_slides():
         status.set(f"Done! Saved to: {directory}")
         if open_after_var.get():
             open_path(directory)
+
         show_preview(directory)
     except Exception as e:
         progress.stop()
@@ -139,6 +141,8 @@ def export_to_pptx(directory):
         status.set(f"Exported to {pptx_path}")
         if open_after_var.get():
             open_path(pptx_path)
+        open_path(pptx_path)
+
         if delete_var.get():
             for img in images:
                 os.remove(img)
